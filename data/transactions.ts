@@ -6,6 +6,10 @@ interface GetStorageTransactionResponse {
   transaction?: StorageTransaction,
 }
 
+interface InitiateTransactionResponse {
+  apiError?: APIError,
+}
+
 export interface StorageTransaction {
   userVisibleId: string,
   externalId: string,
@@ -44,6 +48,7 @@ export const getTransaction = async (externalTransactionId: string): Promise<Sto
 export async function initiateTransaction(userVisibleId: string, payerAccount: string, transactionFee: bigint): Promise<void> {
   const url = initiateTransactionUrl();
   const requestBody = buildInitiateTransactionRequest(userVisibleId, payerAccount, transactionFee);
+  console.log(requestBody);
   const res = await fetch(url, {
     method: 'POST',
     body: requestBody,
@@ -51,7 +56,8 @@ export async function initiateTransaction(userVisibleId: string, payerAccount: s
       'Content-Type': 'application/json',
     },
   });
-  if (!res.ok) {
-    throw new Error("Error initiating transaction");
+  const backendResponse = await res.json() as InitiateTransactionResponse;
+  if (backendResponse.apiError) {
+    throw new Error(backendResponse.apiError?.userMessage);
   }
 }

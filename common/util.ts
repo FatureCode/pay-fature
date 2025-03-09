@@ -114,7 +114,7 @@ export function buildInitiateTransactionRequest(
 ): string {
   // Convert the bigint to a string to avoid serialization issues.
   const feeString = transactionFee.toString();
-  return JSON.stringify({ userVisibleId, payerAccount, feeString });
+  return JSON.stringify({ userVisibleId, payerAccount, transactionFee: feeString });
 }
 
 export function validateTransactionUserVisibleId(userVisibleTransactionId: string) {
