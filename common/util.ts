@@ -125,5 +125,5 @@ export function validateTransactionUserVisibleId(userVisibleTransactionId: strin
 }
 
 function isValidTransactionUserVisibleId(transactionUserVisibleId: string): boolean {
-  return /^[A-Z]{TRANSACTION_REFERENCE_LENGTH}$/.test(transactionUserVisibleId);
+  return /^[A-Z]{8}$/.test(transactionUserVisibleId);
 }
