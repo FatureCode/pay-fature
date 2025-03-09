@@ -112,7 +112,9 @@ export function buildInitiateTransactionRequest(
   payerAccount: string,
   transactionFee: bigint
 ): string {
-  return JSON.stringify({ userVisibleId, payerAccount, transactionFee });
+  // Convert the bigint to a string to avoid serialization issues.
+  const feeString = transactionFee.toString();
+  return JSON.stringify({ userVisibleId, payerAccount, feeString });
 }
 
 export function validateTransactionUserVisibleId(userVisibleTransactionId: string) {
