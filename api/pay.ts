@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Connection, PublicKey, Transaction as Web3Transaction, SystemProgram, LAMPORTS_PER_SOL, clusterApiUrl } from '@solana/web3.js';
-import { convertErrorToApiError, amountToString, amountInBrlToSol, calculateLamportTransactionAmount, TransactionAmount, validateTransactionUserVisibleId } from './common';
+import { convertErrorToApiError, amountToString, amountInBrlToSol, calculateLamportTransactionAmount, TransactionAmount } from '../common/util';
 import { ActionGetResponse, ActionPostResponse } from '@solana/actions';
-import { getTransaction, initiateTransaction, StorageTransaction, TransactionStatus,  } from './data/transactions';
-import { FEE_RECIPIENT_PUBKEY } from './constants';
-import type { VercelRequestQuery } from '@vercel/node'
+import { getTransaction, initiateTransaction, StorageTransaction, TransactionStatus,  } from '../data/transactions';
+import { FEE_RECIPIENT_PUBKEY } from '../common/constants';
+import { getUserVisibleIdParam } from '../common/util';
 
 async function handleGetRequest(req: VercelRequest, res: VercelResponse) {
   // Placeholder values
@@ -103,22 +103,3 @@ function getPayerPubKey(requestBody: any): string {
     throw new Error("Failed to parse payer account");
   }
 }
-
-/**
- * Retrieves and validates the user-visible transaction ID from the request query.
- *
- * @param query - The request query object containing the transaction ID.
- * @returns The validated user-visible transaction ID as a string.
- * @throws Will throw an error if the transaction ID is invalid.
- */
-export function getUserVisibleIdParam(query: VercelRequestQuery): string {
-  try {
-    const userVisibleTransactionId = query.transactionId as string;
-    validateTransactionUserVisibleId(userVisibleTransactionId);
-    return userVisibleTransactionId;
-  } catch (error) {
-    throw new Error("Invalid transactionId from request");
-  }
-}
-
-

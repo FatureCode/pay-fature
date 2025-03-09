@@ -1,4 +1,4 @@
-import { APIError, getTransactionUrl, initiateTransactionUrl, buildInitiateTransactionRequest } from './util';
+import { APIError, getTransactionUrl, initiateTransactionUrl, buildInitiateTransactionRequest } from '../common/util';
 import { DateTime } from 'luxon';
 
 interface GetStorageTransactionResponse {

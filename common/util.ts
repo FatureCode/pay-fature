@@ -1,4 +1,4 @@
-import { FEE } from './constants';
+import { FEE } from '../common/constants';
 import type { VercelRequestQuery } from '@vercel/node';
 
 export interface APIError {
@@ -89,13 +89,35 @@ export function getUserVisibleIdParam(query: VercelRequestQuery): string {
     validateTransactionUserVisibleId(userVisibleTransactionId);
     return userVisibleTransactionId;
   } catch (error) {
-    throw new Error("Invalid transactionId from request");
+    throw new Error(`Invalid transactionId from request: ${error}`);
   }
+}
+
+const BASE_PATH = "https://pay.fature.xyz/api/";
+const GET_STORAGE_TRANSACTION_PATH = "get-storage-transaction";
+const INITIATE_TRANSACTION_PATH = "initiate-transaction";
+const GET_TRANSACTION_URL = BASE_PATH + GET_STORAGE_TRANSACTION_PATH;
+const INITIATE_TRANSACTION_URL = BASE_PATH + INITIATE_TRANSACTION_PATH;
+
+export function getTransactionUrl(userVisibleId: string): string {
+  return GET_TRANSACTION_URL + `?transactionId=${userVisibleId}`;
+}
+
+export function initiateTransactionUrl(): string {
+  return INITIATE_TRANSACTION_URL;
+}
+
+export function buildInitiateTransactionRequest(
+  userVisibleId: string,
+  payerAccount: string,
+  transactionFee: bigint
+): string {
+  return JSON.stringify({ userVisibleId, payerAccount, transactionFee });
 }
 
 export function validateTransactionUserVisibleId(userVisibleTransactionId: string) {
   if (!userVisibleTransactionId) {
-    throw new Error("Invalid user visible transaction id");
+    throw new Error("Missing user visible transaction id");
   }
   if (!isValidTransactionUserVisibleId(userVisibleTransactionId)) {
     throw new Error("Invalid user visible transaction id");
