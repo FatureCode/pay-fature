@@ -79,7 +79,7 @@ export function getUserVisibleIdParam(query: VercelRequestQuery): string {
   }
 }
 
-const BASE_PATH = "https://pay.fature.xyz/api/";
+const BASE_PATH = "https://p.fature.xyz/api/";
 const GET_STORAGE_TRANSACTION_PATH = "get-storage-transaction";
 const INITIATE_TRANSACTION_PATH = "initiate-transaction";
 const GET_TRANSACTION_URL = BASE_PATH + GET_STORAGE_TRANSACTION_PATH;
