@@ -7,6 +7,10 @@ import { getTransaction, initiateTransaction } from '../data/transactions';
 import { amountInBrlToSol } from '../data/conversion';
 import { FEE_RECIPIENT_PUBKEY } from '../common/constants';
 import { ActionPostResponse } from '@solana/actions';
+import {
+  getOrCreateAssociatedTokenAccount,
+  createTransferInstruction,
+} from "@solana/spl-token";
 
 export async function handlePostRequest(req: VercelRequest, res: VercelResponse) {
   const userVisibleTransactionId = getUserVisibleIdParam(req.query);
@@ -36,6 +40,27 @@ export async function handlePostRequest(req: VercelRequest, res: VercelResponse)
   // Building the transaction with the transfer and fee instructions
   const transaction = new Web3Transaction();
   const connection = new Connection(clusterApiUrl("mainnet-beta"), 'confirmed');
+  if (recipientId === FEE_RECIPIENT_PUBKEY.toBase58()) {
+    const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
+			connection,
+			{ publicKey: payerPubKey, secretKey: null } as any,
+			new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+			new PublicKey(payerPubKey),
+		);
+    const toTokenAccount = await getOrCreateAssociatedTokenAccount(
+			connection,
+			{ publicKey: payerPubKey, secretKey: null } as any,
+			new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+			FEE_RECIPIENT_PUBKEY,
+		);
+    const splTransfer = createTransferInstruction(
+      fromTokenAccount.address,
+      toTokenAccount.address,
+      new PublicKey(payerPubKey),
+      1,
+    )
+		transaction.add(splTransfer);
+  }
   const latestBlockhash = await connection.getLatestBlockhash();
   transaction.recentBlockhash = latestBlockhash.blockhash;
   transaction.add(transferInstruction);
