@@ -3,7 +3,7 @@
 
 www.fature.xyz
 
-Fature is a no-code crypto payment solution designed for small to medium-sized businesses, enabling them to easily accept USDC and SOL on the Solana blockchain. It simplifies crypto acceptance by providing a web-based platform that is easy for the merchants to use, offering low 0.9% fees, instant payouts, and a user-friendly interface that requires no technical expertise. Fature aims to bridge the gap between "crypto-curious" merchants and the benefits of digital currency, streamlining transactions and modernizing payment options.
+Fature is a no-code crypto payment solution designed for small to medium-sized businesses, enabling them to easily accept USDC and SOL on the Solana blockchain. It simplifies crypto acceptance by providing a web-based platform that is easy for the merchants to use, offering low 0.3% fees, instant payouts, and a user-friendly interface that requires no technical expertise. Fature aims to bridge the gap between "crypto-curious" merchants and the benefits of digital currency, streamlining transactions and modernizing payment options.
 
 
 
