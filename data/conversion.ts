@@ -41,7 +41,7 @@ export async function amountInToken(amountInBrl: number, token: Token): Promise<
   try {
     const solToBrl = await fetch(url)
       .then((res) => res.json())
-      .then((data) => data.solana.brl);
+      .then((data) => data[apiId].brl);
     const amountInSol = amountInBrl / solToBrl;
     return amountInSol;
   }
