@@ -1,5 +1,7 @@
 import { FEE } from '../common/constants';
 import type { VercelRequestQuery } from '@vercel/node';
+import { Token, getTokenDecimals} from '../data/tokens';
+import { amountInToken } from '../data/conversion';
 
 export interface APIError {
   userMessage: string,
@@ -9,23 +11,28 @@ export interface APIError {
   retriable: boolean,
 }
 
-export interface TransactionAmount {
-  toMerchant: bigint,
-  fee: bigint
+export interface TransactionAmounts {
+  // In Lamports if token is SOL, otherwise in the smallest unit of the SPL token.
+  principal: bigint,
+  // In Lamports if token is SOL, otherwise in the smallest unit of the SPL token.
+  fee: bigint,
+  paymentToken: Token,
 }
 
-/**
- * Calculates the transaction amount in Lamports, including the fee and the amount to the merchant.
- *
- * @param transactionTotalInLamports - The total transaction amount in Lamports as a bigint.
- * @returns An object containing the fee amount and the amount to the merchant.
- */
-export function calculateLamportTransactionAmount(transactionTotalInLamports: bigint): TransactionAmount {
-  const feeAmount = BigInt(Math.round(Number(transactionTotalInLamports) * FEE));
-  const toMerchantAmount = transactionTotalInLamports - feeAmount;
+export async function calculateTransactionAmounts(amountInBrl: number, token: Token): Promise<TransactionAmounts> {
+  if (amountInBrl <= 0) {
+    throw new Error("Amount must be greater than zero");
+  }
+  const transactionTotalInToken = await amountInToken(amountInBrl, token);
+  // Need to convert the amount to the smallest unit of the token.
+  const transactionTotalInDecimal = Math.floor(transactionTotalInToken * getTokenDecimals(token));
+  const feeInDecimal = Math.floor(transactionTotalInDecimal * FEE);
+  const principalInDecimal = transactionTotalInDecimal - feeInDecimal;
+
   return {
-    fee: feeAmount,
-    toMerchant: toMerchantAmount
+    fee: BigInt(feeInDecimal),
+    principal: BigInt(principalInDecimal),
+    paymentToken: token,
   }
 }
 
@@ -59,8 +66,6 @@ export function convertErrorToApiError(error: any, retriable: boolean, errorCode
 export function amountToString(amount: number): string {
   return `R$${amount}`;
 }
-
-
 
 /**
  * Retrieves and validates the user-visible transaction ID from the request query.

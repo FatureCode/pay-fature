@@ -1,4 +1,23 @@
 import { InternalError } from '../common/errors';
+import { Token } from './tokens';
+
+/**
+ * Converts a `Token` enum value to its corresponding API identifier string.
+ *
+ * @param token - The token to convert.
+ * @returns The API identifier string for the given token.
+ * @throws {InternalError} If the token is not supported.
+ */
+function tokenToApiId(token: Token): string {
+  switch (token) {
+    case Token.USDC:
+      return 'usd-coin';
+    case Token.SOL:
+      return 'solana';
+    default:
+      throw new InternalError(`Unsupported token: ${token}`, 400, true);
+  }
+}
 
 /**
  * Converts an amount in Brazilian Real (BRL) to Solana (SOL).
@@ -13,10 +32,13 @@ import { InternalError } from '../common/errors';
  * @throws {InternalError} - Throws an error if the fetch request fails or if the
  * response data is not in the expected format.
  */
-export async function amountInBrlToSol(amountInBrl: number): Promise<number> {
+export async function amountInToken(amountInBrl: number, token: Token): Promise<number> {
+  if (amountInBrl <= 0) {
+    throw new InternalError('Amount must be greater than zero', 400, true);
+  }
+  const apiId = tokenToApiId(token);
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${apiId}&vs_currencies=brl`;
   try {
-    const url = 'https://api.coingecko.com/api/v3/simple/price' +
-      '?ids=solana&vs_currencies=brl';
     const solToBrl = await fetch(url)
       .then((res) => res.json())
       .then((data) => data.solana.brl);
