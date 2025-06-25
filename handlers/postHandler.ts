@@ -14,6 +14,7 @@ export async function handlePostRequest(req: VercelRequest, res: VercelResponse)
   const { externalId, amount, recipientId } = storageTransaction;
   // Calculating the amount to transfer including the fee.
   const transactionAmount: TransactionAmounts = await calculateTransactionAmounts(amount, storageTransaction.paymentToken);
+  console.log(`Transaction amount: ${JSON.stringify(transactionAmount)}`);
   // Marking the transaction as initiated
   await initiateTransaction(userVisibleTransactionId, payerPubKey, transactionAmount.fee);
   // Building the transaction with the transfer and fee instructions
