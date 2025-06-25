@@ -47,7 +47,7 @@ export async function amountInTokenDecimals(amountInBrl: number, token: Token): 
     const amountInToken = amountInBrl / tokenToBrl;
     console.log(`Converted amount: ${amountInToken} ${apiId}`);
     // Convert to the smallest unit of the token (e.g., for USDC, this would be 6 decimals)
-    const amountInTokenDecimals = Math.floor(amountInToken * 10 * getTokenDecimals(token));
+    const amountInTokenDecimals = Math.floor(amountInToken * Math.pow(10, getTokenDecimals(token)));
     console.log(`Amount in token decimals: ${amountInTokenDecimals}`);
     return amountInTokenDecimals;
   }
