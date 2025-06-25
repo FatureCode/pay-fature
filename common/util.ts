@@ -1,7 +1,7 @@
 import { FEE } from '../common/constants';
 import type { VercelRequestQuery } from '@vercel/node';
 import { Token, getTokenDecimals} from '../data/tokens';
-import { amountInToken } from '../data/conversion';
+import { amountInTokenDecimals } from '../data/conversion';
 
 export interface APIError {
   userMessage: string,
@@ -23,12 +23,11 @@ export async function calculateTransactionAmounts(amountInBrl: number, token: To
   if (amountInBrl <= 0) {
     throw new Error("Amount must be greater than zero");
   }
-  const transactionTotalInToken = await amountInToken(amountInBrl, token);
   // Need to convert the amount to the smallest unit of the token.
-  const transactionTotalInDecimal = Math.floor(transactionTotalInToken * getTokenDecimals(token));
-  const feeInDecimal = Math.floor(transactionTotalInDecimal * FEE);
-  const principalInDecimal = transactionTotalInDecimal - feeInDecimal;
-
+  const transactionTotalInTokenDecimals =  Math.floor(await amountInTokenDecimals(amountInBrl, token))
+  const feeInDecimal = Math.floor(transactionTotalInTokenDecimals * FEE);
+  const principalInDecimal = transactionTotalInTokenDecimals - feeInDecimal;
+  console.log(`Transaction total in token decimals: ${principalInDecimal} (principal) + ${feeInDecimal} (fee) = ${transactionTotalInTokenDecimals}`);
   return {
     fee: BigInt(feeInDecimal),
     principal: BigInt(principalInDecimal),

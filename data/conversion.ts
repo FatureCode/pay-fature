@@ -1,5 +1,5 @@
 import { InternalError } from '../common/errors';
-import { Token } from './tokens';
+import { Token, getTokenDecimals } from './tokens';
 
 /**
  * Converts a `Token` enum value to its corresponding API identifier string.
@@ -32,18 +32,21 @@ function tokenToApiId(token: Token): string {
  * @throws {InternalError} - Throws an error if the fetch request fails or if the
  * response data is not in the expected format.
  */
-export async function amountInToken(amountInBrl: number, token: Token): Promise<number> {
+export async function amountInTokenDecimals(amountInBrl: number, token: Token): Promise<number> {
+  console.log(`Converting ${amountInBrl} BRL to ${token}`);
   if (amountInBrl <= 0) {
     throw new InternalError('Amount must be greater than zero', 400, true);
   }
   const apiId = tokenToApiId(token);
   const url = `https://api.coingecko.com/api/v3/simple/price?ids=${apiId}&vs_currencies=brl`;
   try {
-    const solToBrl = await fetch(url)
+    const tokenToBrl = await fetch(url)
       .then((res) => res.json())
       .then((data) => data[apiId].brl);
-    const amountInSol = amountInBrl / solToBrl;
-    return amountInSol;
+    console.log(`Exchange rate: 1 ${apiId} = ${tokenToBrl} BRL`);
+    const amountInToken = amountInBrl / tokenToBrl;
+    console.log(`Converted amount: ${amountInToken} ${apiId}`);
+    return amountInToken * getTokenDecimals(token);
   }
   catch (error) {
     throw new InternalError('Error converting amount to Solana', 500, true, error.message);
