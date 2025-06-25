@@ -47,7 +47,9 @@ export async function amountInTokenDecimals(amountInBrl: number, token: Token): 
     const amountInToken = amountInBrl / tokenToBrl;
     console.log(`Converted amount: ${amountInToken} ${apiId}`);
     // Convert to the smallest unit of the token (e.g., for USDC, this would be 6 decimals)
-    return amountInToken * 10 * getTokenDecimals(token);
+    const amountInTokenDecimals = Math.floor(amountInToken * 10 * getTokenDecimals(token));
+    console.log(`Amount in token decimals: ${amountInTokenDecimals}`);
+    return amountInTokenDecimals;
   }
   catch (error) {
     throw new InternalError('Error converting amount to Solana', 500, true, error.message);

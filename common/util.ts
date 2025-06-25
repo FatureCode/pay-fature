@@ -24,7 +24,8 @@ export async function calculateTransactionAmounts(amountInBrl: number, token: To
     throw new Error("Amount must be greater than zero");
   }
   // Need to convert the amount to the smallest unit of the token.
-  const transactionTotalInTokenDecimals =  Math.floor(await amountInTokenDecimals(amountInBrl, token))
+  const transactionTotalInTokenDecimals =  await amountInTokenDecimals(amountInBrl, token);
+  console.log(`Transaction total in token decimals: ${transactionTotalInTokenDecimals}`);
   const feeInDecimal = Math.floor(transactionTotalInTokenDecimals * FEE);
   const principalInDecimal = transactionTotalInTokenDecimals - feeInDecimal;
   console.log(`Transaction total in token decimals: ${principalInDecimal} (principal) + ${feeInDecimal} (fee) = ${transactionTotalInTokenDecimals}`);
